@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+  <title>Visual Transit Simulator Documentation</title>
+</head>
+<body>
+  <h1>Introduction</h1>
+      <p>This is a visual transit simulator (VTS) modeling the UMN campus. The software simulates vehicles and passengers.</p>
+      <ul>
+          <li>Vehicles are either buses or trains.</li>
+          <li>Vehicles provide service for a line, which is a pairing of an outbound and inbound route. The routes are contiguous: the outbound route ends at the same stop the inbound starts and vice versa.</li>
+          <li>As the vehicles traverse the routes, they make stops to pick up and drop off passengers. A vehicle only makes one trip along a line before exiting the simulation.</li>
+          <li>One route can have multiple vehicles running it at the same time, each at different stops.</li>
+      </ul>
+      <p>The simulation is divided into a visualization module and a simulator module.<p>
+      <ul>
+          <li>The visualization module is a web client application that runs in a browser. It is written in JavaScript and HTML. It is located in <code>&lt;root&gt;/app/src/main/webapp/web_graphics</code>/</li>
+          <li>The simulator module is a web server application written in Java. It is located under <code>&lt;root&gt;/app/src/main/java/edu/umn/cs/csci3081w/project</code> and is split into model and webserver classes.</li>
+      </ul>
+      <p>The VTS software is ran in the browser and the user can configure the number of time units simulated and the rate new vehicles will be added to a route in the simulation. They can restart the simulation by reloading the browser tab.</p>
+  <h2>Workflow</h2>
+    <p>The visualization module connects to the simulator via a websocket upon launch, triggering the simulator's <code>WebServerSession.onOpen</code> function. Afterwards the modules communicate with JSON messages. See <code>&lt;root&gt;/app/src/main/webapp/web_graphics/sketch.js</code> for the visualization modules sent messages and the <code>WebServerSession.onMessage</code> and <code>WebServerSession.sendJson</code> methods in the simulator module for its messages.</p>
+  <h2>Configuration</h2>
+      <p>The simulation is configured in app/src/main/resources/config.txt. Each line is structured thusly:</p>
+      <p><pre>
+          LINE_START, BUS_LINE, Campus Connector
+
+          ROUTE_START, East Bound
+
+          STOP, Blegen Hall, 44.972392, -93.243774, .15
+          STOP, Coffman, 44.973580, -93.235071, .3
+          STOP, Oak Street at University Avenue, 44.975392, -93.226632, .025
+          STOP, Transitway at 23rd Avenue SE, 44.975837, -93.222174, .05
+          STOP, Transitway at Commonwealth Avenue, 44.980753, -93.180669, .05
+          STOP, State Fairgrounds Lot S-108, 44.983375, -93.178810, .01
+          STOP, Buford at Gortner Avenue, 44.984540, -93.181692, .01
+          STOP, St. Paul Student Center, 44.984630, -93.186352, 0
+
+          ROUTE_END
+
+          ROUTE_START, West Bound
+
+          STOP, St. Paul Student Center, 44.984630, -93.186352, .35
+          STOP, Buford at Gortner Avenue, 44.984482, -93.181657, .05
+          STOP, State Fairgrounds Lot S-108, 44.983703, -93.178846, .01
+          STOP, Transitway at Commonwealth Avenue, 44.980663, -93.180808, .01
+          STOP, Thompson Center &amp; 23rd Avenue SE, 44.976397, -93.221801, .025
+          STOP, Ridder Arena, 44.978058, -93.229176, .05
+          STOP, Pleasant Street at Jones-Eddy Circle, 44.978366, -93.236038, .1
+          STOP, Bruininks Hall, 44.974549, -93.236927, .3
+          STOP, Blegen Hall, 44.972638, -93.243591, 0
+
+          ROUTE_END
+
+          LINE_END</pre>
+      <ul>
+          <li><code>LINE_START, BUS_LINE, Campus Connector</code> Begins the definition of a bus line named Campus Connector.</li>
+          <li><code>ROUTE_START, East Bound</code> Is the header for the outbound route info block. The outbound route is always defined before the inbound route. </li>
+          <li><code>ROUTE_START, West Bound</code> Is the header for the inbound route info block.</li>
+          <li>The lines within each info block section describe each stop on the route. A stop is defined by a location name, the coordinates for that location, and the probability to generate a passenger at that stop.
+              <ul><li>The last stop in a route must always have 0 probability to generate a new passenger.</li></ul></li>
+      </ul>
+  <h2>Compilation and Execution</h2>
+    <p>You must start the simulator module and then the visualization model to run the software.</p>
+    <ul>
+        <li>Simulator: to start, run <code>./gradlew appRun</code> from <code>&lt;root&gt;</code>. To stop, press enter in the terminal you started the module.
+            <ul><li>If you are unable to start the simulator module because a previous one is still running, run <code>ps aux | grep gretty | awk '{print $2}' | xargs -L 1 kill</code> in the terminal.</li></ul></li>
+        <li>Visualizer: to start, open address <code>http://localhost:7777/project/web_graphics/project.html</code> in a browser. To stop, close its browser tab.</li>
+    </ul>
+  <h1>UML Class Diagram for Model Classes</h1>
+  <img src="diagrams/umn.jpg" alt="UML Class Diagram for Model Classes" width="800" height="400">
+  <p>Comments on the UML class diagram for model classes.</p>
+  <h1>UML Class Diagram for Webserver Classes</h1>
+  <img src="diagrams/webserver_diagram.png" alt="UML Class Diagram for Webserver Classes" width="800" height="400">
+  <p>Comments on the UML class diagram for webserver classes.</p>
+</body>
+</html>
